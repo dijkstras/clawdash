@@ -5,6 +5,7 @@ import TasksView from './components/TasksView'
 import CalendarView from './components/CalendarView'
 import ActivityFeed from './components/ActivityFeed'
 import NewsView from './components/NewsView'
+import AuthGuard from './components/AuthGuard'
 import './App.css'
 
 function App() {
@@ -17,20 +18,22 @@ function App() {
   }, [])
 
   return (
-    <div className="flex h-screen bg-[#0a0a0f] text-gray-100 overflow-hidden">
-      <Sidebar activeView={activeView} setActiveView={setActiveView} />
-      
-      <div className="flex-1 flex flex-col overflow-hidden">
-        <Header currentTime={currentTime} />
+    <AuthGuard>
+      <div className="flex h-screen bg-[#0a0a0f] text-gray-100 overflow-hidden">
+        <Sidebar activeView={activeView} setActiveView={setActiveView} />
         
-        <main className="flex-1 overflow-auto p-6">
-          {activeView === 'timeline' && <ActivityFeed />}
-          {activeView === 'tasks' && <TasksView />}
-          {activeView === 'calendar' && <CalendarView />}
-          {activeView === 'news' && <NewsView />}
-        </main>
+        <div className="flex-1 flex flex-col overflow-hidden">
+          <Header currentTime={currentTime} />
+          
+          <main className="flex-1 overflow-auto p-6">
+            {activeView === 'timeline' && <ActivityFeed />}
+            {activeView === 'tasks' && <TasksView />}
+            {activeView === 'calendar' && <CalendarView />}
+            {activeView === 'news' && <NewsView />}
+          </main>
+        </div>
       </div>
-    </div>
+    </AuthGuard>
   )
 }
 
