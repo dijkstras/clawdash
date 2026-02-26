@@ -1,0 +1,29 @@
+[
+  {
+    "id": 1,
+    "title": "AI Design Systems: The Next Evolution",
+    "source": "UX Collective",
+    "summary": "Hoe AI design systems gaat transformeren en wat dit betekent voor design teams in 2025",
+    "category": "design",
+    "timestamp": "2 uur geleden",
+    "url": "https://uxdesign.cc"
+  },
+  {
+    "id": 2,
+    "title": "React 19: Nieuwe features voor betere UX",
+    "source": "TechCrunch",
+    "summary": "Server components, streaming, en automatische memoization - wat je moet weten",
+    "category": "tech",
+    "timestamp": "5 uur geleden",
+    "url": "https://techcrunch.com"
+  },
+  {
+    "id": 3,
+    "title": "Amsterdam lanceert nieuw fietsplan",
+    "source": "AT5",
+    "summary": "Extra fietsroutes door het centrum, werkzaamheden starten volgende maand",
+    "category": "local",
+    "timestamp": "8 uur geleden",
+    "url": "https://www.at5.nl"
+  }
+]
