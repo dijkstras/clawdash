@@ -333,7 +333,8 @@
         }
 
         // Initialize dashboard
-        function initDashboard() {
+        async function initDashboard() {
+            await loadCalendarEvents();
             renderTimeline();
             renderTasks();
             renderCalendar();
@@ -464,7 +465,18 @@
             }
         }
 
-        // Calendar
+        // Calendar with real events
+        let calendarEvents = [];
+        
+        async function loadCalendarEvents() {
+            try {
+                const response = await fetch('events.json');
+                calendarEvents = await response.json();
+            } catch (e) {
+                console.error('Failed to load events:', e);
+            }
+        }
+
         function renderCalendar() {
             const now = new Date();
             now.setDate(now.getDate() + currentWeekOffset * 7);
@@ -481,39 +493,91 @@
             const container = document.getElementById('calendar-days');
             container.innerHTML = '';
             
+            // Get events for this week
+            const weekEvents = calendarEvents.filter(e => {
+                const eventDate = new Date(e.date);
+                return eventDate >= startOfWeek && eventDate <= endOfWeek;
+            });
+            
             for (let i = 0; i < 7; i++) {
                 const day = new Date(startOfWeek);
                 day.setDate(startOfWeek.getDate() + i);
                 
                 const isToday = day.toDateString() === new Date().toDateString();
-                const hasEvents = Math.random() > 0.7; // Demo
+                const dayEvents = weekEvents.filter(e => new Date(e.date).toDateString() === day.toDateString());
+                const hasEvents = dayEvents.length > 0;
+                
+                // Color code by event type
+                let borderColor = '';
+                if (hasEvents) {
+                    const hasKids = dayEvents.some(e => e.type === 'kids');
+                    const hasWork = dayEvents.some(e => e.type === 'work');
+                    if (hasKids) borderColor = 'border-pink-500';
+                    else if (hasWork) borderColor = 'border-blue-500';
+                    else borderColor = 'border-violet-500';
+                }
                 
                 container.innerHTML += `
-                    <div class="aspect-square p-2 rounded-lg ${isToday ? 'bg-violet-600' : 'bg-zinc-800'} ${hasEvents ? 'border border-violet-500' : ''} cursor-pointer hover:bg-zinc-700">
+                    <div class="aspect-square p-2 rounded-lg ${isToday ? 'bg-violet-600' : 'bg-zinc-800'} ${hasEvents ? 'border ' + borderColor : ''} cursor-pointer hover:bg-zinc-700" onclick="showDayEvents('${day.toISOString().split('T')[0]}')">
                         <div class="text-center">
-                            <div class="text-xs text-gray-400">${day.getDate()}</div>
-                            ${hasEvents ? '<div class="w-1.5 h-1.5 bg-violet-400 rounded-full mx-auto mt-1"></div>' : ''}
+                            <div class="text-xs ${isToday ? 'text-white' : 'text-gray-400'}">${day.getDate()}</div>
+                            ${hasEvents ? `<div class="flex justify-center gap-0.5 mt-1">${dayEvents.slice(0,3).map(() => `<div class="w-1 h-1 rounded-full ${dayEvents[0].type === 'kids' ? 'bg-pink-400' : dayEvents[0].type === 'work' ? 'bg-blue-400' : 'bg-violet-400'}"></div>`).join('')}</div>` : ''}
                         </div>
                     </div>
                 `;
             }
             
-            // Demo events
-            document.getElementById('calendar-events').innerHTML = `
+            // Show all week events
+            renderEventsList(weekEvents);
+        }
+
+        function renderEventsList(events) {
+            const container = document.getElementById('calendar-events');
+            
+            if (events.length === 0) {
+                container.innerHTML = '<div class="card p-4 text-gray-400">Geen afspraken deze week</div>';
+                return;
+            }
+            
+            // Sort by date and time
+            events.sort((a, b) => new Date(a.date + 'T' + a.time) - new Date(b.date + 'T' + b.time));
+            
+            const grouped = events.reduce((acc, e) => {
+                const day = new Date(e.date).toLocaleDateString('nl-NL', { weekday: 'long', day: 'numeric' });
+                if (!acc[day]) acc[day] = [];
+                acc[day].push(e);
+                return acc;
+            }, {});
+            
+            container.innerHTML = `
                 <div class="card p-4">
                     <h3 class="font-semibold mb-3">Afspraken deze week</h3>
-                    <div class="space-y-2">
-                        <div class="flex items-center gap-3 p-2 bg-zinc-800 rounded">
-                            <span class="text-violet-400 text-sm">09:00</span>
-                            <span>Team standup</span>
-                        </div>
-                        <div class="flex items-center gap-3 p-2 bg-zinc-800 rounded">
-                            <span class="text-violet-400 text-sm">14:00</span>
-                            <span>Design review</span>
-                        </div>
+                    <div class="space-y-4">
+                        ${Object.entries(grouped).map(([day, dayEvents]) => `
+                            <div>
+                                <p class="text-xs text-gray-500 uppercase mb-2">${day}</p>
+                                <div class="space-y-2">
+                                    ${dayEvents.map(e => `
+                                        <div class="flex items-center gap-3 p-2 bg-zinc-800 rounded ${e.type === 'kids' ? 'border-l-2 border-pink-500' : e.type === 'work' ? 'border-l-2 border-blue-500' : ''}">
+                                            <span class="text-violet-400 text-sm font-mono">${e.time}</span>
+                                            <div class="flex-1">
+                                                <p class="text-sm font-medium">${e.title}</p>
+                                                ${e.location ? `<p class="text-xs text-gray-500">📍 ${e.location}</p>` : ''}
+                                            </div>
+                                            ${e.who ? `<span class="text-xs px-2 py-1 rounded ${e.type === 'kids' ? 'bg-pink-500/20 text-pink-400' : 'bg-zinc-700'}">${e.who}</span>` : ''}
+                                        </div>
+                                    `).join('')}
+                                </div>
+                            </div>
+                        `).join('')}
                     </div>
                 </div>
             `;
+        }
+
+        function showDayEvents(dateStr) {
+            const dayEvents = calendarEvents.filter(e => e.date === dateStr);
+            renderEventsList(dayEvents);
         }
 
         function prevWeek() {

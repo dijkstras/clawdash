@@ -1,0 +1,56 @@
+[
+  {
+    "id": 1,
+    "title": "Floortje - Hockey training",
+    "date": "2026-02-26",
+    "time": "16:00",
+    "type": "kids",
+    "who": "Floortje",
+    "location": "Hockeyclub"
+  },
+  {
+    "id": 2,
+    "title": "Giel - Zwemles",
+    "date": "2026-03-01",
+    "time": "10:00",
+    "type": "kids",
+    "who": "Giel",
+    "location": "Zwembad"
+  },
+  {
+    "id": 3,
+    "title": "Floortje - Zangles",
+    "date": "2026-02-28",
+    "time": "14:00",
+    "type": "kids",
+    "who": "Floortje",
+    "location": "Muziekschool"
+  },
+  {
+    "id": 4,
+    "title": "Team standup",
+    "date": "2026-02-26",
+    "time": "09:00",
+    "type": "work",
+    "who": "Sjoerd",
+    "location": "Online"
+  },
+  {
+    "id": 5,
+    "title": "Design review",
+    "date": "2026-02-27",
+    "time": "14:00",
+    "type": "work",
+    "who": "Sjoerd",
+    "location": "Kantoor"
+  },
+  {
+    "id": 6,
+    "title": "Kinderen ophalen",
+    "date": "2026-03-02",
+    "time": "17:00",
+    "type": "co-parenting",
+    "who": "Sjoerd",
+    "location": "Bij Roos"
+  }
+]
